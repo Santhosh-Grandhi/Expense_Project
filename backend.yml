@@ -1,0 +1,67 @@
+- name: MySql Setup
+  hosts: all
+  become: true
+#  become_user: sudo (optional step as become: true defaults to sudo user)
+  tasks:
+    - name: Disable Nodejs
+      ansible.builtin.shell: dnf module disable nodejs -y
+
+    - name: Enable Nodejs 20 Version
+      ansible.builtin.shell: dnf module enable nodejs:20 -y
+
+    - name: Install Nodejs 20 version
+      ansible.builtin.dnf:
+        name: nodejs
+        state: present
+
+    - name: Add Expense User
+      ansible.builtin.user:
+        name: expense
+
+    - name: Copy backend service file
+      ansible.builtin.copy:
+        src: backend.service
+        dest: /etc/systemd/system/backend.service
+
+    - name: Remove App directory
+      ansible.builtin.file:
+        path: /app
+        state: absent
+
+    - name: Create an APP directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: Download the backend content and extract
+      ansible.builtin.unarchive:
+        src: https://expense-artifacts.s3.amazonaws.com/expense-backend-v2.zip
+        dest: /app
+        remote_src: true
+
+    - name: Install npm packages(dependencies)
+      community.general.npm:
+        path: /app
+#     MYSQL Python is to support load schema concept below as it is coming from external source community.mysql.mysql_db)
+    - name: Install MySql client and MySQL Python module
+      ansible.builtin.dnf:
+        name: mysql
+        state: present
+
+    - name: Install MySql client and MySQL Python module
+      ansible.builtin.dnf:
+        name: python3-PyMySQL
+        state: present
+
+    - name: Load Schema
+      ansible.builtin.shell: mysql -h 172.31.27.228 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+
+
+    - name: Enable and restart backend
+      ansible.builtin.systemd_service:
+        name: backend
+        state: restarted
+        enabled: true
+        daemon_reload: true
+
+
