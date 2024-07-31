@@ -2,18 +2,6 @@
   hosts: all
   become: true
 #  become_user: sudo (optional step as become: true defaults to sudo user))
-  tasks:
-    - name: Installing Ngnix Package
-      ansible.builtin.dnf:
-        name: mysql-server
-        state: present
-
-    - name: Enable and Start MYSQL
-      ansible.builtin.systemd_service:
-        name: mysqld
-        state: started
-        enabled: true
-
-    - name: Set MySql Password
-      ansible.builtin.shell: mysql_secure_installation --set-root-pass ExpenseApp@1
+  roles:
+    - MySql
 
