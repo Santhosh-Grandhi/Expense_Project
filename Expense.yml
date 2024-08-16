@@ -1,8 +1,8 @@
-- name: MySql Setup
+- name: {{ role_name}} Setup
   hosts: all
   become: true
 #  become_user: sudo (optional step as become: true defaults to sudo user)
   roles:
-    - backend
+    - "{{ role_name }}"
 
 

@@ -49,7 +49,7 @@
     state: present
 
 - name: Load Schema
-  ansible.builtin.shell: mysql -h 172.31.27.228 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+  ansible.builtin.shell: mysql -h mysql-{{ env }}.devoperations.online -uroot -pExpenseApp@1 < /app/schema/backend.sql
 
 
 - name: Enable and restart backend
