@@ -13,10 +13,10 @@
   ansible.builtin.user:
     name: expense
 
-- name: Copy backend service file
+- name: Copy backend.yml service file
   ansible.builtin.copy:
-    src: backend.service
-    dest: /etc/systemd/system/backend.service
+    src: backend.yml.service
+    dest: /etc/systemd/system/backend.yml.service
 
 - name: Remove App directory
   ansible.builtin.file:
@@ -28,7 +28,7 @@
     path: /app
     state: directory
 
-- name: Download the backend content and extract
+- name: Download the backend.yml content and extract
   ansible.builtin.unarchive:
     src: https://expense-artifacts.s3.amazonaws.com/expense-backend-v2.zip
     dest: /app
@@ -49,12 +49,12 @@
     state: present
 
 - name: Load Schema
-  ansible.builtin.shell: mysql -h mysql-{{ env }}.devoperations.online -uroot -pExpenseApp@1 < /app/schema/backend.sql
+  ansible.builtin.shell: mysql -h mysql-{{ env }}.devoperations.online -uroot -pExpenseApp@1 < /app/schema/backend.yml.sql
 
 
-- name: Enable and restart backend
+- name: Enable and restart backend.yml
   ansible.builtin.systemd_service:
-    name: backend
+    name: backend.yml
     state: restarted
     enabled: true
     daemon_reload: true
